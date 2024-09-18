@@ -1,0 +1,55 @@
+/* Container and Layout */
+.all-videos-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+/* Video Player */
+.video-player-container {
+  margin-bottom: 40px;
+}
+
+/* Grid Layout */
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+/* Video Card */
+.video-card {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.video-card:hover {
+  transform: scale(1.05);
+}
+
+.video-thumbnail {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+}
+
+/* Video Info */
+.video-info {
+  padding: 10px 0;
+}
+
+.video-info h3 {
+  font-size: 18px;
+  margin: 5px 0;
+}
+
+.video-views {
+  font-size: 14px;
+  color: #606060;
+}
