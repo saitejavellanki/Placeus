@@ -24,7 +24,7 @@ const s3 = new S3Client({
     accessKeyId: accessKey,
     secretAccessKey: secretAccessKey,
   },
-  region: bucketRegion
+  region: "ap-south-1"
 });
 
 const app = express();
