@@ -19,13 +19,26 @@ const bucketRegion = process.env.BUCKET_REGION;
 const accessKey = process.env.ACCESS_KEY;
 const secretAccessKey = process.env.SECRET_ACCESS_KEY;
 
-const s3 = new S3Client({
-  credentials: {
-    accessKeyId: accessKey,
-    secretAccessKey: secretAccessKey,
-  },
-  region: "ap-south-1"
-});
+// Check for required environment variables
+if (!bucketName || !bucketRegion || !accessKey || !secretAccessKey) {
+  console.error("Missing required environment variables");
+  process.exit(1);
+}
+
+// Initialize S3 client with error handling
+let s3;
+try {
+  s3 = new S3Client({
+    credentials: {
+      accessKeyId: accessKey,
+      secretAccessKey: secretAccessKey,
+    },
+    region: bucketRegion
+  });
+} catch (error) {
+  console.error("Error initializing S3 client:", error);
+  process.exit(1);
+}
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -179,6 +192,10 @@ app.post("/upload", upload.fields([{ name: 'file' }, { name: 'thumbnail' }]), as
 
 app.get("/videos", async function (req, res) {
   try {
+    if (!bucketName) {
+      throw new Error("Bucket name is not defined");
+    }
+
     console.log("Attempting to list objects in S3 bucket");
     const listObjectsCommand = new ListObjectsV2Command({
       Bucket: bucketName,
