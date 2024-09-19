@@ -57,6 +57,7 @@ const Homepage = () => {
     const fetchVideos = async () => {
       try {
         const response = await fetch('https://placeus-backend1.onrender.com/videos');
+        
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

@@ -18,6 +18,7 @@ const QAPage = () => {
   const toast = useToast();
 
   const auth = getAuth();
+  //placeus
   // Assume we have a current user ID (you'd get this from your auth system)
   const currentUserId = auth.currentUser ? auth.currentUser.uid : null;
 
