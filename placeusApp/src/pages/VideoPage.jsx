@@ -141,6 +141,18 @@ function VideoPage() {
 
   const handlePlayerReady = (player) => {
     playerRef.current = player;
+  
+    // Example: Add event listeners for error handling
+    player.on('error', (e) => {
+      console.error('Video Player Error:', e);
+      toast({
+        title: "Error",
+        description: "Failed to load video. Please try again.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    });
   };
 
   return (

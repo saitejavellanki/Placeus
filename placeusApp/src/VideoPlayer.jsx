@@ -8,46 +8,41 @@ export const VideoPlayer = (props) => {
   const { options, onReady } = props;
 
   useEffect(() => {
-    // Make sure Video.js player is only initialized once
     if (!playerRef.current) {
-      // The Video.js player needs to be _inside_ the component el for React 18 Strict Mode.
-      const videoElement = document.createElement("video-js");
-
-      videoElement.classList.add("vjs-big-play-centered");
+      const videoElement = document.createElement("video");
+      videoElement.className = "video-js";
+      videoElement.controls = true;
       videoRef.current.appendChild(videoElement);
 
-      const player = (playerRef.current = videojs(videoElement, options, () => {
-        videojs.log("player is ready");
+      const player = (playerRef.current = videojs(videoElement, {
+        ...options,
+        controls: true,
+        fluid: true,
+      }, () => {
+        videojs.log('Player is ready');
         onReady && onReady(player);
       }));
 
-      // You could update an existing player in the `else` block here
-      // on prop change, for example:
+      player.on('error', (event) => {
+        console.error('Video Player Error:', event);
+        alert(`Video Player Error: ${event.type}`);
+      });
     } else {
       const player = playerRef.current;
-
-      player.autoplay(options.autoplay);
       player.src(options.sources);
+      player.autoplay(options.autoplay);
     }
-  }, [options, videoRef]);
-
-  // Dispose the Video.js player when the functional component unmounts
-  useEffect(() => {
-    const player = playerRef.current;
 
     return () => {
-      if (player && !player.isDisposed()) {
-        player.dispose();
+      if (playerRef.current && !playerRef.current.isDisposed()) {
+        playerRef.current.dispose();
         playerRef.current = null;
       }
     };
-  }, [playerRef]);
+  }, [options, onReady]);
 
   return (
-    <div
-      data-vjs-player
-      style={{ width: "700px", padding: "10px"}}
-    >
+    <div data-vjs-player style={{ width: "700px", padding: "10px" }}>
       <div ref={videoRef} />
     </div>
   );
