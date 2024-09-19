@@ -11,8 +11,14 @@ import NodeCache from "node-cache";
 import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from "@aws-sdk/client-s3";
 import dotenv from "dotenv";
 import { Readable } from "stream";
+import { promisify } from 'util';
 
 dotenv.config();
+
+const app = express();
+const port = process.env.PORT || 3001;
+const cache = new NodeCache({ stdTTL: 3600 }); // Cache for 1 hour
+const baseUrl = process.env.BASE_URL || 'https://placeus-backend1.onrender.com';
 
 const bucketName = process.env.BUCKET_NAME;
 const bucketRegion = process.env.BUCKET_REGION;
@@ -40,11 +46,6 @@ try {
   process.exit(1);
 }
 
-const app = express();
-const port = process.env.PORT || 3000;
-const cache = new NodeCache({ stdTTL: 3600 }); // Cache for 1 hour
-const baseUrl = process.env.BASE_URL || 'https://placeus-backend1.onrender.com';
-
 // Multer storage configuration for memory storage
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -59,7 +60,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Fetch Google's public keys
+// Helper Functions
 async function getGooglePublicKeys() {
   const cachedKeys = cache.get("googleKeys");
   if (cachedKeys) {
@@ -69,6 +70,95 @@ async function getGooglePublicKeys() {
   const response = await axios.get('https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com');
   cache.set("googleKeys", response.data);
   return response.data;
+}
+
+async function verifyFirebaseToken(token, keys) {
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, keys, {
+      algorithms: ['RS256'],
+      audience: 'your-firebase-project-id', // Replace with your Firebase project ID
+      issuer: 'https://securetoken.google.com/your-firebase-project-id', // Replace with your Firebase project ID
+    }, (err, decoded) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(decoded);
+      }
+    });
+  });
+}
+
+async function uploadFileToS3(file, key) {
+  const params = {
+    Bucket: bucketName,
+    Key: key,
+    Body: file.buffer,
+    ContentType: file.mimetype,
+  };
+
+  try {
+    const command = new PutObjectCommand(params);
+    await s3.send(command);
+    return `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/${key}`;
+  } catch (error) {
+    console.error("Error uploading to S3:", error);
+    throw error;
+  }
+}
+
+function streamToString(stream) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    stream.on("data", (chunk) => chunks.push(chunk));
+    stream.on("error", reject);
+    stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
+  });
+}
+
+const execPromise = promisify(exec);
+
+async function processVideo(s3, bucketName, lessonId, videoKey) {
+  const localVideoPath = `/tmp/${lessonId}_video${path.extname(videoKey)}`;
+  const outputPath = `/tmp/${lessonId}`;
+  const hlsPath = `${outputPath}/index.m3u8`;
+
+  try {
+    if (!fs.existsSync(outputPath)) {
+      fs.mkdirSync(outputPath, { recursive: true });
+    }
+
+    // Download video from S3
+    const getObjectCommand = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: videoKey
+    });
+    const { Body } = await s3.send(getObjectCommand);
+    await new Promise((resolve, reject) => {
+      Body.pipe(fs.createWriteStream(localVideoPath))
+        .on('error', reject)
+        .on('close', resolve);
+    });
+
+    // Process video with FFmpeg
+    const ffmpegCommand = `ffmpeg -i ${localVideoPath} -codec:v libx264 -codec:a aac -hls_time 10 -hls_playlist_type vod -hls_segment_filename "${outputPath}/segment%03d.ts" -start_number 0 ${hlsPath}`;
+    await execPromise(ffmpegCommand);
+
+    // Upload HLS files to S3
+    const files = fs.readdirSync(outputPath);
+    for (const file of files) {
+      const fileContent = fs.readFileSync(`${outputPath}/${file}`);
+      await uploadFileToS3({ buffer: fileContent, mimetype: 'application/octet-stream' }, `courses/${lessonId}/${file}`);
+    }
+
+    console.log("Video processing complete");
+  } catch (error) {
+    console.error("Error processing video:", error);
+    throw error;
+  } finally {
+    // Clean up temporary files
+    if (fs.existsSync(localVideoPath)) fs.unlinkSync(localVideoPath);
+    if (fs.existsSync(outputPath)) fs.rmSync(outputPath, { recursive: true, force: true });
+  }
 }
 
 // Middleware to verify Firebase token
@@ -89,42 +179,7 @@ const verifyToken = async (req, res, next) => {
   }
 };
 
-// Function to verify Firebase token
-async function verifyFirebaseToken(token, keys) {
-  return new Promise((resolve, reject) => {
-    jwt.verify(token, keys, {
-      algorithms: ['RS256'],
-      audience: 'your-firebase-project-id', // Replace with your Firebase project ID
-      issuer: 'https://securetoken.google.com/your-firebase-project-id', // Replace with your Firebase project ID
-    }, (err, decoded) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(decoded);
-      }
-    });
-  });
-}
-
-// Function to upload file to S3
-async function uploadFileToS3(file, key) {
-  const params = {
-    Bucket: bucketName,
-    Key: key,
-    Body: file.buffer,
-    ContentType: file.mimetype,
-  };
-
-  try {
-    const command = new PutObjectCommand(params);
-    await s3.send(command);
-    return `https://${bucketName}.s3.${bucketRegion}.amazonaws.com/${key}`;
-  } catch (error) {
-    console.error("Error uploading to S3:", error);
-    throw error;
-  }
-}
-
+// Routes
 app.get('/', function(req, res) {
   res.json({ message: "Hello welcome to placeus" });
 });
@@ -155,33 +210,10 @@ app.post("/upload", upload.fields([{ name: 'file' }, { name: 'thumbnail' }]), as
       thumbnailUrl: thumbnailUrl
     });
 
-    // Process video
-    const outputPath = `/tmp/${lessonId}`;
-    const hlsPath = `${outputPath}/index.m3u8`;
-
-    if (!fs.existsSync(outputPath)) {
-      fs.mkdirSync(outputPath, { recursive: true });
-    }
-
-    const ffmpegCommand = `ffmpeg -i ${videoUrl} -codec:v libx264 -codec:a aac -hls_time 10 -hls_playlist_type vod -hls_segment_filename "${outputPath}/segment%03d.ts" -start_number 0 ${hlsPath}`;
-
-    exec(ffmpegCommand, async (error, stdout, stderr) => {
-      if (error) {
-        console.log(`exec error: ${error}`);
-        return;
-      }
-
-      // Upload HLS files to S3
-      const files = fs.readdirSync(outputPath);
-      for (const file of files) {
-        const fileContent = fs.readFileSync(`${outputPath}/${file}`);
-        await uploadFileToS3({ buffer: fileContent, mimetype: 'application/octet-stream' }, `courses/${lessonId}/${file}`);
-      }
-
-      // Clean up temporary files
-      fs.rmSync(outputPath, { recursive: true, force: true });
-
-      console.log("Video processing complete");
+    // Process video asynchronously
+    processVideo(s3, bucketName, lessonId, videoKey).catch(error => {
+      console.error("Error in video processing:", error);
+      // Here you might want to update the video status in your database or send a notification
     });
 
   } catch (error) {
@@ -249,16 +281,6 @@ app.get("/videos", async function (req, res) {
     res.status(500).json({ error: "Unable to list videos", details: error.message });
   }
 });
-
-// Helper function to convert stream to string
-function streamToString(stream) {
-  return new Promise((resolve, reject) => {
-    const chunks = [];
-    stream.on("data", (chunk) => chunks.push(chunk));
-    stream.on("error", reject);
-    stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
-  });
-}
 
 // Fetch video info based on lessonId
 app.get('/videos/:lessonId', async (req, res) => {
@@ -351,6 +373,7 @@ app.get('/videos/:lessonId/comments', async (req, res) => {
     }
   }
 });
+
 
 // Optional: Route to delete a comment (requires authentication and ownership verification)
 app.delete('/videos/:lessonId/comments/:commentId', verifyToken, async (req, res) => {
