@@ -136,12 +136,12 @@ function VideoPage() {
     controls: true,
     responsive: true,
     fluid: true,
-    sources: [{ src: videoUrl, type: "application/x-mpegURL" }]
+    sources: [{ src: videoUrl, type: "video/mp4" }] // Change type if needed
   };
 
   const handlePlayerReady = (player) => {
     playerRef.current = player;
-  
+
     // Example: Add event listeners for error handling
     player.on('error', (e) => {
       console.error('Video Player Error:', e);
@@ -174,7 +174,6 @@ function VideoPage() {
                 ))}
               </Wrap>
               <Flex align="center" color="gray.500">
-                
                 <FaComment />
                 <Text ml={2}>{comments.length} Comments</Text>
               </Flex>
