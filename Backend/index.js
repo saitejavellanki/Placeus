@@ -18,7 +18,7 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3001;
 const cache = new NodeCache({ stdTTL: 3600 }); // Cache for 1 hour
-const baseUrl = process.env.BASE_URL || 'https://placeus-backend1.onrender.com';
+const baseUrl = 'https://placeus-backend1.onrender.com';
 
 const bucketName = process.env.BUCKET_NAME;
 const bucketRegion = process.env.BUCKET_REGION;
