@@ -17,7 +17,7 @@ import { promisify } from 'util';
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3002;
 const cache = new NodeCache({ stdTTL: 3600 }); // Cache for 1 hour
 const baseUrl = 'https://placeus-backend1.onrender.com';
 
@@ -204,24 +204,24 @@ app.post("/upload", upload.fields([{ name: 'file' }, { name: 'thumbnail' }]), as
 
     res.json({
       message: "Upload successful. Processing video...",
-      lessonId: lessonId,
-      title: title,
-      tags: tags,
-      videoUrl: videoUrl,
-      thumbnailUrl: thumbnailUrl
+      lessonId,
+      title,
+      tags,
+      videoUrl,
+      thumbnailUrl,
     });
 
     // Process video asynchronously
     processVideo(s3, bucketName, lessonId, videoKey).catch(error => {
       console.error("Error in video processing:", error);
-      // Here you might want to update the video status in your database or send a notification
     });
 
   } catch (error) {
-    console.error("Error in upload process:", error);
-    res.status(500).json({ error: "Upload failed" });
+    console.error("Error in upload process:", error); // Log detailed error
+    res.status(500).json({ error: "Upload failed", details: error.message }); // Include error details in response
   }
 });
+
 
 app.get("/videos", async function (req, res) {
   try {

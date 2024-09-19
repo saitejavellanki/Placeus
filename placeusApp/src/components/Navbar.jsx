@@ -29,6 +29,12 @@ export default function Navbar() {
     await signOut(auth);
   };
 
+  const extractNameFromEmail = (email) => {
+    const namePart = email.split('@')[0];
+    const formattedName = namePart.replace(/\./g, ' ').replace(/_/g, ' ');
+    return formattedName.charAt(0).toUpperCase() + formattedName.slice(1);
+  };
+
   return (
     <Box>
       <Flex
@@ -79,7 +85,9 @@ export default function Navbar() {
         <Flex alignItems="center">
           {user ? (
             <>
-              <Text mr={4}>Hi, {user.displayName || user.email}</Text>
+              <Text mr={4}>
+  Hi, {user.displayName || extractNameFromEmail(user.email)}
+</Text>
               <Button onClick={handleLogout} bg="red.400" color="white" size="sm" mr={2}>
                 Logout
               </Button>

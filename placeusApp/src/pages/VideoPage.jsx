@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { 
   Box, VStack, Heading, Text, Textarea, Button, 
   Flex, Spacer, Divider, Tag, TagLabel, Wrap, useToast, Modal, ModalOverlay, 
   ModalContent, ModalHeader, ModalFooter, ModalBody, ModalCloseButton, useDisclosure,
-  Container, Avatar, IconButton, Tooltip, useColorModeValue, HStack
+  Container, Avatar, IconButton, Tooltip, useColorModeValue, HStack, useClipboard
 } from '@chakra-ui/react';
-import { FaTrash, FaThumbsUp, FaComment } from 'react-icons/fa';
+import { FaTrash, FaThumbsUp, FaComment, FaEye, FaShare } from 'react-icons/fa';
 import VideoPlayer from '../VideoPlayer';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, deleteDoc, doc, updateDoc, increment, getDoc, setDoc } from 'firebase/firestore';
 
 function VideoPage() {
   const { lessonId } = useParams();
@@ -20,6 +20,7 @@ function VideoPage() {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [user, setUser] = useState(null);
+  const [viewCount, setViewCount] = useState(0);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const auth = getAuth();
@@ -28,12 +29,18 @@ function VideoPage() {
   const bgColor = useColorModeValue('white', 'gray.800');
   const borderColor = useColorModeValue('gray.200', 'gray.700');
 
+  const { hasCopied, onCopy } = useClipboard(window.location.href);
+
   useEffect(() => {
     fetchVideo();
     fetchComments();
+    fetchViewCount();
 
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
+      if (currentUser) {
+        incrementViewCount();
+      }
     });
 
     return () => unsubscribe();
@@ -72,6 +79,29 @@ function VideoPage() {
         duration: 3000,
         isClosable: true,
       });
+    }
+  };
+
+  const fetchViewCount = async () => {
+    try {
+      const viewCountDoc = await getDoc(doc(db, 'videos', lessonId));
+      if (viewCountDoc.exists()) {
+        setViewCount(viewCountDoc.data().viewCount || 0);
+      } else {
+        setViewCount(0);
+      }
+    } catch (error) {
+      console.error("Error fetching view count:", error);
+    }
+  };
+
+  const incrementViewCount = async () => {
+    try {
+      const viewCountRef = doc(db, 'videos', lessonId);
+      await setDoc(viewCountRef, { viewCount: increment(1) }, { merge: true });
+      setViewCount(prevCount => prevCount + 1);
+    } catch (error) {
+      console.error("Error incrementing view count:", error);
     }
   };
 
@@ -136,13 +166,12 @@ function VideoPage() {
     controls: true,
     responsive: true,
     fluid: true,
-    sources: [{ src: videoUrl, type: "video/mp4" }] // Change type if needed
+    sources: [{ src: videoUrl, type: "video/mp4" }]
   };
 
   const handlePlayerReady = (player) => {
     playerRef.current = player;
 
-    // Example: Add event listeners for error handling
     player.on('error', (e) => {
       console.error('Video Player Error:', e);
       toast({
@@ -155,6 +184,23 @@ function VideoPage() {
     });
   };
 
+  const handleShare = () => {
+    onCopy();
+    toast({
+      title: "Link Copied!",
+      description: "The video link has been copied to your clipboard.",
+      status: "success",
+      duration: 2000,
+      isClosable: true,
+    });
+  };
+
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    navigate("/login");
+  };
+
   return (
     <Container maxW="container.xl" py={8}>
       <Flex direction={{ base: "column", lg: "row" }} gap={8}>
@@ -163,9 +209,38 @@ function VideoPage() {
           {videoUrl ? (
             <VStack align="stretch" spacing={4}>
               <Box borderRadius="lg" overflow="hidden" boxShadow="md">
-                <VideoPlayer options={videoPlayerOptions} onReady={handlePlayerReady} />
+                {user ? (
+                  <VideoPlayer options={videoPlayerOptions} onReady={handlePlayerReady} />
+                ) : (
+                  <Box
+                    height="300px"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    bg="gray.100"
+                    color="gray.600"
+                    borderRadius="lg"
+                  >
+                    <VStack>
+                      <Text fontSize="xl" fontWeight="bold">Please log in to watch this video</Text>
+                      <Button colorScheme="blue" onClick={handleClick}>
+                        Log In
+                      </Button>
+                    </VStack>
+                  </Box>
+                )}
               </Box>
-              <Heading as="h1" size="lg">{videoTitle}</Heading>
+              <Flex justify="space-between" align="center">
+                <Heading as="h1" size="lg">{videoTitle}</Heading>
+                <Tooltip label="Share Video" placement="top">
+                  <IconButton
+                    icon={<FaShare />}
+                    aria-label="Share Video"
+                    onClick={handleShare}
+                    colorScheme="blue"
+                  />
+                </Tooltip>
+              </Flex>
               <Wrap spacing={2}>
                 {videoTags.map((tag, index) => (
                   <Tag key={index} size="md" colorScheme="blue" borderRadius="full">
@@ -173,9 +248,15 @@ function VideoPage() {
                   </Tag>
                 ))}
               </Wrap>
-              <Flex align="center" color="gray.500">
-                <FaComment />
-                <Text ml={2}>{comments.length} Comments</Text>
+              <Flex align="center" color="gray.500" justify="space-between">
+                <HStack>
+                  <FaComment />
+                  <Text ml={2}>{comments.length} Comments</Text>
+                </HStack>
+                <HStack>
+                  <FaEye />
+                  <Text ml={2}>{viewCount} Views</Text>
+                </HStack>
               </Flex>
             </VStack>
           ) : (
