@@ -5,7 +5,26 @@ import { db } from '../firebase/config';
 import { SearchIcon } from '@chakra-ui/icons';
 import { getAuth } from "firebase/auth";
 
+const TruncatedText = ({ text, maxLines = 3 }) => {
+  const [isTruncated, setIsTruncated] = useState(true);
+  const toggleTruncate = () => setIsTruncated(!isTruncated);
 
+  return (
+    <>
+      <Text
+        noOfLines={isTruncated ? maxLines : undefined}
+        mb={2}
+      >
+        {text}
+      </Text>
+      {text.split('\n').length > maxLines && (
+        <Button size="xs" onClick={toggleTruncate} variant="link" colorScheme="blue">
+          {isTruncated ? 'Show More' : 'Show Less'}
+        </Button>
+      )}
+    </>
+  );
+};
 
 const QAPage = () => {
   const [questions, setQuestions] = useState([]);
@@ -18,8 +37,6 @@ const QAPage = () => {
   const toast = useToast();
 
   const auth = getAuth();
-  //placeus
-  // Assume we have a current user ID (you'd get this from your auth system)
   const currentUserId = auth.currentUser ? auth.currentUser.uid : null;
 
   useEffect(() => {
@@ -33,7 +50,6 @@ const QAPage = () => {
       setFilteredQuestions(questionsData);
     });
 
-    // Load user votes from localStorage
     const savedVotes = localStorage.getItem('userVotes');
     if (savedVotes) {
       setUserVotes(JSON.parse(savedVotes));
@@ -174,7 +190,6 @@ const QAPage = () => {
         await updateDoc(questionRef, { answers: updatedAnswers });
       }
   
-      // Update local user votes
       setUserVotes(prev => ({...prev, [voteKey]: true}));
       localStorage.setItem('userVotes', JSON.stringify({...userVotes, [voteKey]: true}));
   
@@ -193,7 +208,6 @@ const QAPage = () => {
   return (
     <Container maxWidth="95%" px={[2, 4, 6]}>
       <Flex direction={{ base: 'column', md: 'row' }}>
-        {/* Q&A Section */}
         <Box flex={1} mr={{ base: 0, md: 6 }} mb={{ base: 6, md: 0 }}>
           <Heading as="h1" size="xl" mt={5} mb={2} textAlign="left">Q&A Forum</Heading>
           
@@ -252,7 +266,9 @@ const QAPage = () => {
                     </Button>
                   </Flex>
                   <Box flex={1}>
-                    <Heading as="h3" size="sm" mb={2}>{question.text}</Heading>
+                    <Heading as="h3" size="sm" mb={2}>
+                      <TruncatedText text={question.text} maxLines={2} />
+                    </Heading>
                     <HStack spacing={2} mb={3}>
                       <Badge colorScheme="green" fontSize="xs">Asked</Badge>
                       <Text fontSize="xs" color="gray.500">
@@ -283,7 +299,7 @@ const QAPage = () => {
                             </Button>
                           </Flex>
                           <Box flex={1}>
-                            <Text fontSize="sm" mb={2}>{answer.text}</Text>
+                            <TruncatedText text={answer.text} maxLines={3} />
                             <HStack spacing={2}>
                               <Badge colorScheme="blue" fontSize="xs">Answered</Badge>
                               <Text fontSize="xs" color="gray.500">
@@ -323,7 +339,6 @@ const QAPage = () => {
           </VStack>
         </Box>
 
-        {/* News Section */}
         <Box width={{ base: '100%', md: '25%' }} p={1} pt={10}>
           <Heading as="h2" size="md" mb={4}>Latest News</Heading>
           <Box mb={4} borderWidth={1} p={2} borderRadius="md" boxShadow="sm">

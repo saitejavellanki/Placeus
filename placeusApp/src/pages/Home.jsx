@@ -17,7 +17,7 @@ const VideoCard = ({ title, instructor, rating, viewsCount, thumbnailUrl }) => (
     <Image src={thumbnailUrl || "/api/placeholder/300/200"} alt={title} objectFit="cover" h="150px" w="100%" />
     <Box p={4}>
       <Heading size="sm" mb={2} noOfLines={2}>{title || 'Untitled Video'}</Heading>
-      <Text fontSize="xs" color="gray.500" mb={1}>{instructor || 'Unknown Instructor'}</Text>
+      <Text fontSize="xs" color="gray.500" mb={1}>{instructor || 'Placeus'}</Text>
       {rating !== undefined && (
         <Flex align="center" mb={1}>
           <Text fontWeight="bold" color="orange.400" mr={1}>{Number(rating).toFixed(1)}</Text>
