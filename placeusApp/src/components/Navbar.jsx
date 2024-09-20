@@ -63,7 +63,7 @@ export default function Navbar() {
             fontSize={{ base: "2xl", md: "4xl" }}
             ml={{ base: 2, md: 7 }}
           >
-            𝗣𝗹𝗮𝗰𝗲<span style={{ color: 'orange' }}>u𝘀</span>.
+            𝗣𝗹𝗮𝗰𝗲<span style={{ color: '#32CD32' }}>u𝘀</span>.
           </Text>
         </Flex>
 
