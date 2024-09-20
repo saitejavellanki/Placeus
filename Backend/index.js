@@ -13,6 +13,10 @@ import dotenv from "dotenv";
 import { Readable } from "stream";
 import { promisify } from 'util';
 //placeuss
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
