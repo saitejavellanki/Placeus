@@ -218,11 +218,7 @@ function AllVideos() {
                     <Text fontSize="sm" color="gray.500" noOfLines={2}>
                       {video.description}
                     </Text>
-                    <Flex align="center" width="100%">
-                      <Icon as={Star} color="yellow.400" mr={1} />
-                      <Text fontWeight="bold" mr={2}>{video.averageRating.toFixed(1)}</Text>
-                      
-                    </Flex>
+                    
                     
                     <Stack direction="row" spacing={2} mt={2} flexWrap="wrap">
                       {video.tags.slice(0, 3).map(tag => (
