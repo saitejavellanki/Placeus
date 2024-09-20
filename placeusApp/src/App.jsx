@@ -12,6 +12,8 @@ import ComingSoonPage from './pages/Community';
 import QAPage from './pages/QandA';
 import HomePage from './pages/Home';
 import RoadmapPage from './pages/Roadmaps';
+import CommunityEventsPage from './pages/Community';
+import EventUploadForm from './pages/Event';
 
 
 function App() {
@@ -28,8 +30,9 @@ function App() {
         <Route path="/video/:lessonId" element={<VideoPage />} />
         <Route path="/up" element={<VideoUpload/>} />
         <Route path="/roadmaps" element={<RoadmapPage/>} />
-        <Route path="/comm" element={<ComingSoonPage/>} />
+        <Route path="/comm" element={<CommunityEventsPage/>} />
         <Route path="/qa" element={<QAPage/>} />
+        <Route path="/eventupload" element={<EventUploadForm/>} />
       </Routes>
     </Router>
   );
