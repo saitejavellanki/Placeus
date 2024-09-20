@@ -28,7 +28,7 @@ function App() {
       <Route path="/profile" element={<ProfilePage />} />
         <Route path="/all" element={<AllVideos />} />
         <Route path="/video/:lessonId" element={<VideoPage />} />
-        <Route path="/up" element={<VideoUpload/>} />
+        <Route path="/upload" element={<VideoUpload/>} />
         <Route path="/roadmaps" element={<RoadmapPage/>} />
         <Route path="/comm" element={<CommunityEventsPage/>} />
         <Route path="/qa" element={<QAPage/>} />
