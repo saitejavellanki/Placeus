@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box, Container, Heading, Text, SimpleGrid, Button, Input, InputGroup, InputRightElement,
-  VStack, HStack, Image, Flex, Link, IconButton, Spinner, Grid
+  VStack, HStack, Image, Flex, Link, IconButton, Spinner, Grid,
+  useColorModeValue,
+  Icon
 } from '@chakra-ui/react';
 import { SearchIcon, StarIcon, ChevronRightIcon } from '@chakra-ui/icons';
 import { useNavigate } from 'react-router-dom';
 import AlumniSection from '../components/Company';
 import TestimonialCarousel from '../components/Testimonials';
 import hero from "../assets/istockphoto-1207862144-612x612-removebg-preview.png"
+import { FaInstagram, FaLinkedin, FaTwitter } from 'react-icons/fa';
 
 const VideoCard = ({ title, instructor, rating, viewsCount, thumbnailUrl }) => (
   <Box borderWidth="1px" borderRadius="lg" overflow="hidden">
@@ -47,6 +50,10 @@ const Homepage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const bgColor = useColorModeValue('black', 'black');
+  const textColor = useColorModeValue('white', 'gray.400');
+  const iconColor = useColorModeValue('white', 'black');
+  const hoverColor = useColorModeValue('blue.500', 'blue.300');
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -130,39 +137,49 @@ const Homepage = () => {
       <TestimonialCarousel />
 
       {/* Footer */}
-      <Box bg="gray.800" color="white" py={{ base: 8, md:2}}>
-        <Container maxW="container.xl">
-          <SimpleGrid columns={{ base: 1, sm: 2, md: 4 }} spacing={{ base: 8, md: 8 }}>
-            <VStack align={{ base: "center", md: "start" }}>
-              <Heading size="md" mb={4}>Company</Heading>
-              <Link>About</Link>
-              <Link>Careers</Link>
-              <Link>Press</Link>
-            </VStack>
-            <VStack align={{ base: "center", md: "start" }}>
-              <Heading size="md" mb={4}>Community</Heading>
-              <Link>Blog</Link>
-              <Link>Teaching</Link>
-              <Link>Affiliates</Link>
-            </VStack>
-            <VStack align={{ base: "center", md: "start" }}>
-              <Heading size="md" mb={4}>Support</Heading>
-              <Link>Help Center</Link>
-              <Link>Terms of Service</Link>
-              <Link>Privacy Policy</Link>
-            </VStack>
-            <VStack align={{ base: "center", md: "start" }}>
-              <Heading size="md" mb={4}>Get the app</Heading>
-              <Button leftIcon={<Image src="/api/placeholder/20/20" alt="App Store" />} variant="outline" colorScheme="whiteAlpha" mb={2}>
-                App Store
-              </Button>
-              <Button leftIcon={<Image src="/api/placeholder/20/20" alt="Google Play" />} variant="outline" colorScheme="whiteAlpha">
-                Google Play
-              </Button>
-            </VStack>
-          </SimpleGrid>
-        </Container>
-      </Box>
+      <Box as="footer" bg={bgColor} py={4}>
+      <Flex
+        direction={{ base: 'column', md: 'row' }}
+        maxW="container.xl"
+        mx="auto"
+        px={4}
+        align="center"
+        justify="space-between"
+      >
+        <Text color={textColor} fontSize="sm" mb={{ base: 2, md: 0 }}>
+          © 2024 Placeus. All rights reserved.
+        </Text>
+        <Flex>
+          <Link href="https://instagram.com" isExternal mx={2}>
+            <Icon
+              as={FaInstagram}
+              w={5}
+              h={5}
+              color={iconColor}
+              _hover={{ color: hoverColor }}
+            />
+          </Link>
+          <Link href="https://linkedin.com" isExternal mx={2}>
+            <Icon
+              as={FaLinkedin}
+              w={5}
+              h={5}
+              color={iconColor}
+              _hover={{ color: hoverColor }}
+            />
+          </Link>
+          <Link href="https://twitter.com" isExternal mx={2}>
+            <Icon
+              as={FaTwitter}
+              w={5}
+              h={5}
+              color={iconColor}
+              _hover={{ color: hoverColor }}
+            />
+          </Link>
+        </Flex>
+      </Flex>
+    </Box>
     </Box>
   );
 };

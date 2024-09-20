@@ -1,29 +1,43 @@
 import React, { useState } from 'react';
-import { ChakraProvider, extendTheme, Box, Heading, SimpleGrid, Button, Tabs, TabList, TabPanels, Tab, TabPanel, List, ListItem, ListIcon, Text } from '@chakra-ui/react';
-import { CheckCircleIcon } from 'lucide-react';
+import {
+  ChakraProvider,
+  extendTheme,
+  Container,
+  Box,
+  Flex,
+  Heading,
+  Text,
+  SimpleGrid,
+  VStack,
+  HStack,
+  Button,
+  Icon,
+  useColorModeValue,
+  Progress,
+} from '@chakra-ui/react';
+import { ChevronRightIcon } from '@chakra-ui/icons';
+import { FaCode, FaLaptopCode, FaServer, FaCloud, FaMobileAlt, FaDatabase, FaBrain, FaGamepad, FaShieldAlt, FaCubes } from 'react-icons/fa';
 
 const theme = extendTheme({
+  fonts: {
+    heading: '"Inter", sans-serif',
+    body: '"Inter", sans-serif',
+  },
   colors: {
     brand: {
-      50: '#E6F6FF',
-      100: '#BAE3FF',
-      500: '#2D9CDB',
-      600: '#2B8BC7',
-      700: '#207AB7',
+      50: '#E6FFFA',
+      100: '#B2F5EA',
+      200: '#81E6D9',
+      300: '#4FD1C5',
+      400: '#38B2AC',
+      500: '#319795',
+      600: '#2C7A7B',
+      700: '#285E61',
+      800: '#234E52',
+      900: '#1D4044',
     },
-    accent: {
-      50: '#FFF5F5',
-      100: '#FED7D7',
-      500: '#F56565',
-    },
-  },
-  fonts: {
-    heading: '"Segoe UI", sans-serif',
-    body: '"Roboto", sans-serif',
   },
 });
-
-// ... (keep the existing roadmapData object)
 
 const roadmapData = {
  
@@ -358,83 +372,140 @@ const roadmapData = {
   // ... (existing programming languages)
 };
 
+const categoryIcons = {
+  fullstack: FaCode,
+  frontend: FaLaptopCode,
+  backend: FaServer,
+  devops: FaCloud,
+  mobile: FaMobileAlt,
+  datascience: FaDatabase,
+  machinelearning: FaBrain,
+  gamedev: FaGamepad,
+  cybersecurity: FaShieldAlt,
+  blockchain: FaCubes,
+};
+
 const RoadmapPage = () => {
   const [selectedCategory, setSelectedCategory] = useState("fullstack");
+  const [showAllSteps, setShowAllSteps] = useState(false);
 
-  
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
+    setShowAllSteps(false);
+  };
 
-  const developmentPaths = [
-    "Full Stack", "Frontend", "Backend", "DevOps", "Mobile App", "Data Science",
-    "Machine Learning", "Game Dev", "Cybersecurity", "Blockchain"
-  ];
+  const visibleSteps = showAllSteps ? roadmapData[selectedCategory] : roadmapData[selectedCategory].slice(0, 5);
 
-  const languagePaths = [
-    "JavaScript", "Python", "Java", "C++", "Go"
-  ];
+  const bgColor = useColorModeValue('gray.50', 'gray.900');
+  const cardBgColor = useColorModeValue('white', 'gray.800');
+  const textColor = useColorModeValue('gray.700', 'gray.100');
+  const borderColor = useColorModeValue('gray.200', 'gray.700');
 
   return (
     <ChakraProvider theme={theme}>
-      <Box>
-        <Heading as="h1" size="2xl" marginBottom={8} color="brand.700" textAlign="center">
-          Tech Roadmaps
-        </Heading>
-        
-        <Tabs isFitted variant="soft-rounded" onChange={(index) => setSelectedCategory(index === 0 ? "fullstack" : "javascript")} marginBottom={8}>
-          <TabList mb="1em">
-            <Tab _selected={{ color: 'white', bg: 'brand.500' }}>Development Paths</Tab>
-            <Tab _selected={{ color: 'white', bg: 'brand.500' }}>Programming Languages</Tab>
-          </TabList>
-          <TabPanels>
-            <TabPanel>
-              <SimpleGrid columns={[2, 3, 5]} spacing={4}>
-                {developmentPaths.map((path) => (
-                  <Button
-                    key={path}
-                    onClick={() => setSelectedCategory(path.toLowerCase().replace(' ', ''))}
-                    size="md"
-                    variant="outline"
-                    colorScheme="brand"
-                    _hover={{ bg: 'brand.50' }}
-                  >
-                    {path}
-                  </Button>
-                ))}
-              </SimpleGrid>
-            </TabPanel>
-            <TabPanel>
-              <SimpleGrid columns={[2, 3, 5]} spacing={4}>
-                {languagePaths.map((path) => (
-                  <Button
-                    key={path}
-                    onClick={() => setSelectedCategory(path.toLowerCase())}
-                    size="md"
-                    variant="outline"
-                    colorScheme="brand"
-                    _hover={{ bg: 'brand.50' }}
-                  >
-                    {path}
-                  </Button>
-                ))}
-              </SimpleGrid>
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
+      <Box minHeight="100vh" bg={bgColor} color={textColor}>
+        <Container maxW="container.xl" py={12}>
+          <VStack spacing={12} align="stretch">
+            <Box textAlign="center">
+              <Heading as="h1" size="2xl" fontWeight="bold" mb={4} bgGradient="linear(to-r, brand.400, brand.600)" bgClip="text">
+                Master Your Tech Journey
+              </Heading>
+              <Text fontSize="xl" fontWeight="medium">
+                Explore curated roadmaps to guide your learning path
+              </Text>
+            </Box>
 
-        {roadmapData[selectedCategory] && (
-          <Box borderWidth={1} borderRadius="lg" padding={6} bg="white" boxShadow="md">
-            <Heading as="h2" size="xl" marginBottom={4} color="brand.600" textTransform="capitalize">
-              {selectedCategory.replace(/([A-Z])/g, ' $1').trim()} Roadmap
-            </Heading>
-            <List spacing={3}>
-              {roadmapData[selectedCategory].map((step, index) => (
-                <ListItem key={index} display="flex" alignItems="center">
-                  <ListIcon as={CheckCircleIcon} color="accent.500" />
-                  <Text fontSize="lg">{step}</Text>
-                </ListItem>
+            <SimpleGrid columns={{ base: 1, md: 2, lg: 3 }} spacing={8}>
+              {Object.keys(roadmapData).map((category) => (
+                <Box
+                  key={category}
+                  bg={cardBgColor}
+                  p={6}
+                  borderRadius="xl"
+                  boxShadow="xl"
+                  borderWidth={2}
+                  borderColor={selectedCategory === category ? 'brand.400' : borderColor}
+                  cursor="pointer"
+                  onClick={() => handleCategoryChange(category)}
+                  transition="all 0.3s"
+                  _hover={{ transform: 'translateY(-5px)', boxShadow: '2xl' }}
+                >
+                  <VStack align="start" spacing={4}>
+                    <Icon as={categoryIcons[category] || FaCode} boxSize={10} color="brand.500" />
+                    <Heading as="h3" size="lg" fontWeight="semibold" textTransform="capitalize">
+                      {category.replace(/([A-Z])/g, ' $1').trim()}
+                    </Heading>
+                    <Text fontSize="sm" color="gray.500">
+                      {roadmapData[category].length} steps
+                    </Text>
+                  </VStack>
+                </Box>
               ))}
-            </List>
-          </Box>
-        )}
+            </SimpleGrid>
+
+            {roadmapData[selectedCategory] && (
+              <Box bg={cardBgColor} p={8} borderRadius="xl" boxShadow="xl" borderWidth={2} borderColor={borderColor}>
+                <Heading as="h2" size="xl" mb={6} fontWeight="bold" bgGradient="linear(to-r, brand.400, brand.600)" bgClip="text">
+                  {selectedCategory.replace(/([A-Z])/g, ' $1').trim()} Roadmap
+                </Heading>
+                <VStack align="stretch" spacing={6}>
+                  {visibleSteps.map((step, index) => (
+                    <Box key={index}>
+                      <HStack spacing={4} mb={2}>
+                        <Box
+                          bg="brand.500"
+                          color="white"
+                          borderRadius="full"
+                          w={8}
+                          h={8}
+                          display="flex"
+                          alignItems="center"
+                          justifyContent="center"
+                          fontWeight="bold"
+                        >
+                          {index + 1}
+                        </Box>
+                        <Text fontSize="lg" fontWeight="medium">{step}</Text>
+                      </HStack>
+                      <Progress value={(index + 1) * (100 / visibleSteps.length)} colorScheme="brand" borderRadius="full" />
+                    </Box>
+                  ))}
+                </VStack>
+                {!showAllSteps && roadmapData[selectedCategory].length > 5 && (
+                  <Button
+                    mt={8}
+                    colorScheme="brand"
+                    rightIcon={<ChevronRightIcon />}
+                    onClick={() => setShowAllSteps(true)}
+                    size="lg"
+                    fontWeight="bold"
+                    borderRadius="full"
+                  >
+                    Show all {roadmapData[selectedCategory].length} steps
+                  </Button>
+                )}
+              </Box>
+            )}
+
+            <Flex justifyContent="center">
+              <Box
+                maxW="2xl"
+                bg="brand.50"
+                color="brand.900"
+                p={6}
+                borderRadius="xl"
+                boxShadow="md"
+              >
+                <Heading as="h3" size="lg" mb={4} fontWeight="semibold">
+                  Pro Tip
+                </Heading>
+                <Text fontSize="md">
+                  Start with the fundamentals and progress through each step. Consistency is key - aim to learn and practice regularly. Build projects along the way to reinforce your skills and create a portfolio that showcases your growth.
+                </Text>
+              </Box>
+            </Flex>
+          </VStack>
+        </Container>
       </Box>
     </ChakraProvider>
   );

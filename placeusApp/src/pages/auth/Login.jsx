@@ -4,12 +4,14 @@ import { FaGoogle } from "react-icons/fa";
 import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
 import { auth } from "../../firebase/config";
 import { toast } from "react-toastify";
-import { Box, Button, Flex, Heading, Input, Text, VStack, Image, useColorModeValue } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Input, Text, VStack, Image, useColorModeValue, Alert, AlertIcon } from "@chakra-ui/react";
 import login from "../../assets/register.png"
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const bgColor = useColorModeValue("gray.50", "gray.800");
@@ -18,6 +20,7 @@ const Login = () => {
   const loginUser = (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
     signInWithEmailAndPassword(auth, email, password)
       .then(() => {
@@ -27,7 +30,7 @@ const Login = () => {
       })
       .catch((error) => {
         setIsLoading(false);
-        toast.error(error.message);
+        setError("Invalid credentials. Please try again.");
       });
   };
 
@@ -39,7 +42,7 @@ const Login = () => {
         navigate("/");
       })
       .catch((error) => {
-        toast.error(error.message);
+        setError("Unable to sign in with Google. Please try again.");
       });
   };
 
@@ -48,7 +51,7 @@ const Login = () => {
       {/* Left side - Image */}
       <Box w="50%" display={{ base: "none", md: "block" }}>
         <Image
-          src= {login}
+          src={login}
           alt="Login"
           objectFit="cover"
           w="100%"
@@ -72,20 +75,23 @@ const Login = () => {
           boxShadow="xl"
         >
           <VStack spacing="5" as="form" onSubmit={loginUser}>
-          <Text
-            textAlign={'left'}
-            fontFamily={'heading'}
-            
-            to="/"
-            fontWeight="bold"
-            fontSize="xl"
-            
-          >
-            𝗣𝗹𝗮𝗰𝗲𝘂𝘀.
-          </Text>
+            <Text
+              textAlign={'left'}
+              fontFamily={'heading'}
+              fontWeight="bold"
+              fontSize="xl"
+            >
+              𝗣𝗹𝗮𝗰𝗲𝘂𝘀.
+            </Text>
             <Heading size="xl" mb="6" textAlign="center">
               Welcome Back
             </Heading>
+            {error && (
+              <Alert status="error" borderRadius="md">
+                <AlertIcon />
+                {error}
+              </Alert>
+            )}
             <Input
               placeholder="Email"
               type="email"

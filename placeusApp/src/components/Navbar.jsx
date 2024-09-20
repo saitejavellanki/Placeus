@@ -8,15 +8,17 @@ import {
   Link,
   useDisclosure,
   Button,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from '../firebase/config'; // Import Firebase authentication
+import { auth } from '../firebase/config';
 
 export default function Navbar() {
   const { isOpen, onToggle } = useDisclosure();
   const [user, setUser] = useState(null);
+  const isMobile = useBreakpointValue({ base: true, md: false });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -38,90 +40,97 @@ export default function Navbar() {
   return (
     <Box>
       <Flex
-        bg="white" // Light orange background
-        color="black" // Black text
+        bg="white"
+        color="black"
         minH={'60px'}
         py={{ base: 2 }}
         px={{ base: 4 }}
         borderBottom={1}
         borderStyle={'solid'}
-        borderColor="white" // Border color to match the background
+        borderColor="white"
         align={'center'}
         justify={'space-between'}
-        boxShadow="0px 4px 6px rgba(0, 0, 0, 0.3)" // Light grey shadow
+        boxShadow="0px 4px 6px rgba(0, 0, 0, 0.3)"
+        flexWrap="wrap"
       >
-        <Flex flex={{ base: 1 }} justify={{ base: 'start', md: 'start' }}>
+        <Flex flex={{ base: 1, md: 'auto' }} justify={{ base: 'start', md: 'start' }}>
           <Text
             textAlign={'left'}
             fontFamily={'heading'}
             as={RouterLink}
             to="/"
             fontWeight="bold"
-            fontSize="4xl"
-            ml={7}
+            fontSize={{ base: "2xl", md: "4xl" }}
+            ml={{ base: 2, md: 7 }}
           >
-           𝗣𝗹𝗮𝗰𝗲<span style={{ color: 'orange' }}>u𝘀</span>.
+            𝗣𝗹𝗮𝗰𝗲<span style={{ color: 'orange' }}>u𝘀</span>.
           </Text>
         </Flex>
 
-        <Flex display={{ base: 'none', md: 'flex' }} ml={10}>
-          <DesktopNav />
-        </Flex>
-
-        <Flex
-          flex={{ base: 1, md: 'auto' }}
-          display={{ base: 'flex', md: 'none' }}
-          justify={'flex-end'}
-        >
+        <Flex display={{ base: 'flex', md: 'none' }}>
           <Button
             onClick={onToggle}
             bg="transparent"
-            _hover={{ bg: 'orange.200' }} // Change background on hover
+            _hover={{ bg: 'orange.200' }}
           >
             {isOpen ? <CloseIcon w={3} h={3} /> : <HamburgerIcon w={5} h={5} />}
           </Button>
         </Flex>
 
-        <Flex alignItems="center">
+        <Flex
+          display={{ base: 'none', md: 'flex' }}
+          flex={{ base: 1, md: 'auto' }}
+          justify="flex-end"
+          ml={10}
+        >
+          <DesktopNav />
+        </Flex>
+
+        <Stack
+          direction={'row'}
+          spacing={4}
+          display={{ base: 'none', md: 'flex' }}
+          alignItems="center"
+        >
           {user ? (
             <>
-              <Text mr={4}>
-  Hi, {user.displayName || extractNameFromEmail(user.email)}
-</Text>
-              <Button onClick={handleLogout} bg="red.400" color="white" size="sm" mr={2}>
+              <Text fontSize={{ base: "sm", md: "md" }}>
+                Hi, {user.displayName || extractNameFromEmail(user.email)}
+              </Text>
+              <Button onClick={handleLogout} bg="red.400" color="white" size="sm">
                 Logout
               </Button>
             </>
           ) : (
-            <Button
-              as={RouterLink}
-              to="/login"
-              bg="grey"
-              color="black"
-              borderColor="black"
-              _hover={{ bg: 'grey' }}
-              margin={1}
-              size="sm"
-            >
-              Login
-            </Button>
-            
+            <>
+              <Button
+                as={RouterLink}
+                to="/login"
+                bg="grey"
+                color="black"
+                borderColor="black"
+                _hover={{ bg: 'grey' }}
+                size="sm"
+              >
+                Login
+              </Button>
+              <Button
+                as={RouterLink}
+                to="/register"
+                bg="black"
+                color="white"
+                _hover={{ bg: 'grey' }}
+                size="sm"
+              >
+                Register
+              </Button>
+            </>
           )}
-          <Button
-              as={RouterLink}
-              to="/register"
-              bg="black"
-              color="white"
-              _hover={{ bg: 'grey' }}
-              size="sm"
-            >
-              Register
-            </Button>
-        </Flex>
+        </Stack>
       </Flex>
 
       <Collapse in={isOpen} animateOpacity>
-        <MobileNav />
+        <MobileNav user={user} handleLogout={handleLogout} />
       </Collapse>
     </Box>
   );
@@ -151,12 +160,12 @@ const NavLink = ({ label, href, isActive }) => {
       to={href ?? '#'}
       fontSize={'sm'}
       fontWeight={500}
-      color={isActive ? 'orange' : 'black'} // White text for active and inactive
+      color={isActive ? 'orange' : 'black'}
       _hover={{
         textDecoration: 'none',
-        bg: 'grey.500', // Background color on hover
+        bg: 'grey.500',
       }}
-      position="relative" // Add relative positioning for the active indicator
+      position="relative"
     >
       {label}
       {isActive && (
@@ -166,22 +175,18 @@ const NavLink = ({ label, href, isActive }) => {
           left={0}
           width="full"
           height="2px"
-          bg="black" // White color for the active indicator
+          bg="black"
         />
       )}
     </Link>
   );
 };
 
-const MobileNav = () => {
+const MobileNav = ({ user, handleLogout }) => {
   const location = useLocation();
 
   return (
-    <Stack
-      bg="orange.300" // Light orange background
-      p={4}
-      display={{ md: 'none' }}
-    >
+    <Stack bg="orange.300" p={4} display={{ md: 'none' }}>
       {NAV_ITEMS.map((navItem) => (
         <MobileNavItem
           key={navItem.label}
@@ -189,6 +194,42 @@ const MobileNav = () => {
           isActive={location.pathname === navItem.href}
         />
       ))}
+      <Stack spacing={4} mt={4}>
+        {user ? (
+          <>
+            <Text fontWeight={600} color="white">
+              Hi, {user.displayName || (user.email && user.email.split('@')[0])}
+            </Text>
+            <Button onClick={handleLogout} bg="red.400" color="white" size="sm">
+              Logout
+            </Button>
+          </>
+        ) : (
+          <>
+            <Button
+              as={RouterLink}
+              to="/login"
+              bg="grey"
+              color="black"
+              borderColor="black"
+              _hover={{ bg: 'grey' }}
+              size="sm"
+            >
+              Login
+            </Button>
+            <Button
+              as={RouterLink}
+              to="/register"
+              bg="black"
+              color="white"
+              _hover={{ bg: 'grey' }}
+              size="sm"
+            >
+              Register
+            </Button>
+          </>
+        )}
+      </Stack>
     </Stack>
   );
 };
@@ -204,13 +245,13 @@ const MobileNavItem = ({ label, href, isActive }) => {
         align={'center'}
         _hover={{
           textDecoration: 'none',
-          bg: 'orange.400', // Background color on hover
+          bg: 'orange.400',
         }}
-        position="relative" // Add relative positioning for the active indicator
+        position="relative"
       >
         <Text
           fontWeight={600}
-          color={isActive ? 'white' : 'white'} // White text for active and inactive
+          color={isActive ? 'white' : 'white'}
         >
           {label}
         </Text>
@@ -221,7 +262,7 @@ const MobileNavItem = ({ label, href, isActive }) => {
             left={0}
             width="full"
             height="2px"
-            bg="white" // White color for the active indicator
+            bg="white"
           />
         )}
       </Flex>
@@ -238,7 +279,6 @@ const NAV_ITEMS = [
     label: 'Placements',
     href: '/all',
   },
-  
   {
     label: 'Roadmaps',
     href: '/roadmaps',
