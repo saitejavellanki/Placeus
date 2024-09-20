@@ -21,6 +21,8 @@ const port = process.env.PORT || 3002;
 const cache = new NodeCache({ stdTTL: 3600 }); // Cache for 1 hour
 const baseUrl = 'https://placeus-backend1.onrender.com';
 
+
+
 const bucketName = process.env.BUCKET_NAME;
 const bucketRegion = process.env.BUCKET_REGION;
 const accessKey = process.env.ACCESS_KEY;
@@ -46,6 +48,8 @@ try {
   console.error("Error initializing S3 client:", error);
   process.exit(1);
 }
+
+app.use(express.static(path.join(__dirname, 'placeusapp')));
 
 // Multer storage configuration for memory storage
 const storage = multer.memoryStorage();
@@ -351,6 +355,9 @@ app.post('/videos/:lessonId/comments', verifyToken, async (req, res) => {
   }
 });
 
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'placeusapp', 'index.html'));
+});
 // Route to get all comments for a video
 app.get('/videos/:lessonId/comments', async (req, res) => {
   const { lessonId } = req.params;
