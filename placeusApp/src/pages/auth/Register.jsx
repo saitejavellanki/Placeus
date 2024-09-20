@@ -151,12 +151,7 @@ const Register = () => {
               Register
             </Button>
           </VStack>
-          <Flex justify="center" mt="6">
-            <Text mr="2">Already have an account?</Text>
-            <Link href="/login" color="teal.500" fontWeight="bold" _hover={{ textDecoration: "underline" }}>
-              Login
-            </Link>
-          </Flex>
+          
         </Box>
       </Flex>
     </Flex>
