@@ -61,7 +61,7 @@ const upload = multer({ storage: storage });
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:5173", "https://placeus.onrender.com"],
+    origin: ["http://localhost:3000", "http://localhost:5173", "https://placeus.onrender.com","https://www.placeus.in"],
     credentials: true,
   })
 );
