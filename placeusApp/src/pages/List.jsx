@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { VStack, Box, Heading, Text, Spinner, Badge, Flex, Container, Checkbox, Button, Input, HStack } from '@chakra-ui/react';
+import { VStack, Box, Heading, Text, Spinner, Badge, Flex, Container, Checkbox, Button, Input, HStack, useBreakpointValue } from '@chakra-ui/react';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase/config';
 
@@ -10,6 +10,10 @@ function ExperiencesList() {
   const [roles, setRoles] = useState({});
   const [filters, setFilters] = useState({ companies: {}, roles: {}, status: {} });
   const [searchTerm, setSearchTerm] = useState('');
+
+  const sidebarWidth = useBreakpointValue({ base: '100%', md: '250px' });
+  const sidebarPosition = useBreakpointValue({ base: 'static', md: 'sticky' });
+  const sidebarTop = useBreakpointValue({ base: 'auto', md: '20px' });
 
   useEffect(() => {
     const q = query(collection(db, 'experiences'), orderBy('createdAt', 'desc'));
@@ -66,9 +70,9 @@ function ExperiencesList() {
 
   return (
     <Container maxW="container.xl" py={8}>
-      <Flex>
+      <Flex direction={{ base: 'column', md: 'row' }}>
         {/* Sidebar */}
-        <Box width="250px" pr={8} position="sticky" top="20px" alignSelf="flex-start">
+        <Box width={sidebarWidth} pr={{ base: 0, md: 8 }} position={sidebarPosition} top={sidebarTop} alignSelf="flex-start">
           <VStack align="stretch" spacing={4} bg="gray.50" p={4} borderRadius="md" boxShadow="sm">
             <Heading size="md" color="green.600">Filter By</Heading>
             <Input 
@@ -127,7 +131,7 @@ function ExperiencesList() {
         </Box>
 
         {/* Main content */}
-        <VStack spacing={8} align="stretch" flex={1}>
+        <VStack spacing={8} align="stretch" flex={1} p={{ base: 4, md: 0 }}>
           <Heading as="h1" size="2xl" textAlign="center" color="green.600">
             Interview Experiences
           </Heading>
@@ -137,10 +141,10 @@ function ExperiencesList() {
               <Flex justifyContent="space-between" alignItems="center" mb={4}>
                 <Heading size="lg" color="green.600">{exp.company}</Heading>
                 <HStack>
-                  <Badge colorScheme="green" fontSize="0.8em" p={2} borderRadius="full">
+                  <Badge colorScheme="green" fontSize={{ base: '0.6em', md: '0.8em' }} p={2} borderRadius="full">
                     {exp.position}
                   </Badge>
-                  <Badge colorScheme={exp.status === 'selected' ? 'green' : 'red'} fontSize="0.8em" p={2} borderRadius="full">
+                  <Badge colorScheme={exp.status === 'selected' ? 'green' : 'red'} fontSize={{ base: '0.6em', md: '0.8em' }} p={2} borderRadius="full">
                     {exp.status === 'selected' ? 'Selected' : 'Rejected'}
                   </Badge>
                 </HStack>
