@@ -9,8 +9,13 @@ import {
   useDisclosure,
   Button,
   useBreakpointValue,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  Portal,
 } from '@chakra-ui/react';
-import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
+import { HamburgerIcon, CloseIcon, ChevronDownIcon } from '@chakra-ui/icons';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import { auth } from '../firebase/config';
@@ -142,13 +147,46 @@ const DesktopNav = () => {
   return (
     <Stack direction={'row'} spacing={4}>
       {NAV_ITEMS.map((navItem) => (
-        <NavLink
-          key={navItem.label}
-          {...navItem}
-          isActive={location.pathname === navItem.href}
-        />
+        navItem.label === 'Interviews' ? (
+          <InterviewsDropdown key={navItem.label} isActive={location.pathname === navItem.href} />
+        ) : (
+          <NavLink
+            key={navItem.label}
+            {...navItem}
+            isActive={location.pathname === navItem.href}
+          />
+        )
       ))}
     </Stack>
+  );
+};
+
+const InterviewsDropdown = ({ isActive }) => {
+  return (
+    <Menu>
+      <MenuButton
+        as={Button}
+        rightIcon={<ChevronDownIcon />}
+        p={2}
+        fontSize={'sm'}
+        fontWeight={500}
+        color={isActive ? 'orange' : 'black'}
+        bg="transparent"
+        _hover={{
+          textDecoration: 'none',
+          bg: 'grey.500',
+        }}
+        _expanded={{ bg: 'grey.500' }}
+      >
+        Interviews
+      </MenuButton>
+      <Portal>
+        <MenuList>
+          <MenuItem as={RouterLink} to="/list">View Interviews</MenuItem>
+          <MenuItem as={RouterLink} to="/experience">Upload Experience</MenuItem>
+        </MenuList>
+      </Portal>
+    </Menu>
   );
 };
 
@@ -188,11 +226,15 @@ const MobileNav = ({ user, handleLogout }) => {
   return (
     <Stack bg="orange.300" p={4} display={{ md: 'none' }}>
       {NAV_ITEMS.map((navItem) => (
-        <MobileNavItem
-          key={navItem.label}
-          {...navItem}
-          isActive={location.pathname === navItem.href}
-        />
+        navItem.label === 'Interviews' ? (
+          <MobileInterviewsDropdown key={navItem.label} />
+        ) : (
+          <MobileNavItem
+            key={navItem.label}
+            {...navItem}
+            isActive={location.pathname === navItem.href}
+          />
+        )
       ))}
       <Stack spacing={4} mt={4}>
         {user ? (
@@ -234,6 +276,20 @@ const MobileNav = ({ user, handleLogout }) => {
   );
 };
 
+const MobileInterviewsDropdown = () => {
+  return (
+    <Stack spacing={4}>
+      <Text fontWeight={600} color="white">Interviews</Text>
+      <Link as={RouterLink} to="/list" pl={4} color="white">
+        View Interviews
+      </Link>
+      <Link as={RouterLink} to="/experience" pl={4} color="white">
+        Upload Experience
+      </Link>
+    </Stack>
+  );
+};
+
 const MobileNavItem = ({ label, href, isActive }) => {
   return (
     <Stack spacing={4}>
@@ -271,28 +327,28 @@ const MobileNavItem = ({ label, href, isActive }) => {
 };
 
 const NAV_ITEMS = [
-  {
-    label: 'Home',
-    href: '/',
-  },
-  {
-    label: 'Placements',
-    href: '/all',
-  },
+  // {
+  //   label: 'Home',
+  //   href: '/',
+  // },
+  // {
+  //   label: 'Placements',
+  //   href: '/all',
+  // },
   {
     label: 'Interviews',
     href: '/list',
   },
-  {
-    label: 'Roadmaps',
-    href: '/roadmaps',
-  },
-  {
-    label: 'Q&A',
-    href: '/qa',
-  },
-  {
-    label: 'Community',
-    href: '/comm',
-  },
+   {
+     label: 'Roadmaps',
+     href: '/roadmaps',
+   },
+  // {
+  //   label: 'Q&A',
+  //   href: '/qa',
+  // },
+  // {
+  //   label: 'Community',
+  //   href: '/comm',
+  // },
 ];

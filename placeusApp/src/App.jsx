@@ -23,20 +23,20 @@ function App() {
     <Router>
       <Navbar/>
       <Routes>
-      <Route path="/" element={<HomePage />} />
+      {/* <Route path="/" element={<HomePage />} /> */}
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register/>} />
       <Route path="/reset" element={<ResetPassword />} />
-      <Route path="/profile" element={<ProfilePage />} />
+      {/* <Route path="/profile" element={<ProfilePage />} />
         <Route path="/all" element={<AllVideos />} />
         <Route path="/video/:lessonId" element={<VideoPage />} />
-        <Route path="/up" element={<VideoUpload/>} />
+        <Route path="/up" element={<VideoUpload/>} /> */}
         <Route path="/roadmaps" element={<RoadmapPage/>} />
-        <Route path="/comm" element={<CommunityEventsPage/>} />
-        <Route path="/qa" element={<QAPage/>} />
-        <Route path="/eventupload" element={<EventUploadForm/>} />
+        {/* <Route path="/comm" element={<CommunityEventsPage/>} /> */}
+        <Route path="/" element={<QAPage/>} />
+        {/* <Route path="/eventupload" element={<EventUploadForm/>} />*/}
         <Route path="/experience" element={<UploadExperience/>} />
-        <Route path="/list" element={<ExperiencesList/>} />
+        <Route path="/list" element={<ExperiencesList/>} /> 
 
       </Routes>
     </Router>
