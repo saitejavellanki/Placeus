@@ -14,6 +14,8 @@ import HomePage from './pages/Home';
 import RoadmapPage from './pages/Roadmaps';
 import CommunityEventsPage from './pages/Community';
 import EventUploadForm from './pages/Event';
+import UploadExperience from './pages/Experiece';
+import ExperiencesList from './pages/List';
 
 
 function App() {
@@ -33,6 +35,9 @@ function App() {
         <Route path="/comm" element={<CommunityEventsPage/>} />
         <Route path="/qa" element={<QAPage/>} />
         <Route path="/eventupload" element={<EventUploadForm/>} />
+        <Route path="/experience" element={<UploadExperience/>} />
+        <Route path="/list" element={<ExperiencesList/>} />
+
       </Routes>
     </Router>
   );

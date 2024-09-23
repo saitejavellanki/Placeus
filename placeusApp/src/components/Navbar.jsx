@@ -280,6 +280,10 @@ const NAV_ITEMS = [
     href: '/all',
   },
   {
+    label: 'Interviews',
+    href: '/list',
+  },
+  {
     label: 'Roadmaps',
     href: '/roadmaps',
   },
