@@ -20,15 +20,6 @@ import { collection, addDoc } from 'firebase/firestore';
 import { db, auth } from '../firebase/config';
 import { onAuthStateChanged } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
-
-const modules = {
-  toolbar: [
-    ['bold', 'italic', 'underline'],
-    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-  ]
-};
 
 function UploadExperience() {
   const [company, setCompany] = useState('');
@@ -127,14 +118,13 @@ function UploadExperience() {
         </FormControl>
         <FormControl isRequired>
           <FormLabel fontWeight="bold">Experience</FormLabel>
-          <Box border="1px" borderColor="gray.200" borderRadius="md">
-            <ReactQuill 
-              value={experience} 
-              onChange={setExperience}
-              modules={modules}
-              placeholder="Describe your interview experience..."
-            />
-          </Box>
+          <Textarea 
+            value={experience} 
+            onChange={(e) => setExperience(e.target.value)}
+            placeholder="Describe your interview experience..."
+            size="lg"
+            rows={10}
+          />
         </FormControl>
         <FormControl isRequired>
           <FormLabel fontWeight="bold">Selection Status</FormLabel>

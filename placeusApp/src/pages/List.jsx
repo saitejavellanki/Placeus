@@ -150,7 +150,15 @@ function ExperiencesList() {
                 </HStack>
               </Flex>
               <Text fontWeight="bold" mb={2}>Experience:</Text>
-              <Text whiteSpace="pre-wrap">{exp.experience}</Text>
+              <Box 
+                as="pre" 
+                whiteSpace="pre-wrap" 
+                wordBreak="break-word" 
+                fontFamily="inherit" 
+                fontSize="inherit"
+              >
+                {exp.experience}
+              </Box>
               <Flex justifyContent="flex-end" mt={4}>
                 <Text fontSize="sm" color="gray.500">
                   Posted on: {exp.createdAt.toDate().toLocaleDateString()}
