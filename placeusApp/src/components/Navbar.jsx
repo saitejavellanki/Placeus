@@ -327,14 +327,14 @@ const MobileNavItem = ({ label, href, isActive }) => {
 };
 
 const NAV_ITEMS = [
-  // {
-  //   label: 'Home',
-  //   href: '/',
-  // },
-  // {
-  //   label: 'Placements',
-  //   href: '/all',
-  // },
+  {
+    label: 'Home',
+    href: '/',
+  },
+  {
+    label: 'Placements',
+    href: '/all',
+  },
   {
     label: 'Interviews',
     href: '/list',
@@ -343,12 +343,12 @@ const NAV_ITEMS = [
      label: 'Roadmaps',
      href: '/roadmaps',
    },
-  // {
-  //   label: 'Q&A',
-  //   href: '/qa',
-  // },
-  // {
-  //   label: 'Community',
-  //   href: '/comm',
-  // },
+  {
+    label: 'Q&A',
+    href: '/qa',
+  },
+  {
+    label: 'Community',
+    href: '/comm',
+  },
 ];
