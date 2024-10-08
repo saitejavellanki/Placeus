@@ -33,7 +33,7 @@ function App() {
         <Route path="/up" element={<VideoUpload/>} /> 
         <Route path="/roadmaps" element={<RoadmapPage/>} />
         <Route path="/comm" element={<CommunityEventsPage/>} />
-        <Route path="/" element={<QAPage/>} />
+        <Route path="/qa" element={<QAPage/>} />
         {/* <Route path="/eventupload" element={<EventUploadForm/>} />*/}
         <Route path="/experience" element={<UploadExperience/>} />
         <Route path="/list" element={<ExperiencesList/>} /> 
