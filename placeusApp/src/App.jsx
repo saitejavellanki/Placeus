@@ -16,6 +16,9 @@ import CommunityEventsPage from './pages/Community';
 import EventUploadForm from './pages/Event';
 import UploadExperience from './pages/Experiece';
 import ExperiencesList from './pages/List';
+import SDERoadmap from './pages/Example';
+import ArticleDisplayPage from './pages/Articles';
+import ArticleUploadPage from './pages/UploadArticles';
 
 
 function App() {
@@ -34,9 +37,12 @@ function App() {
         <Route path="/roadmaps" element={<RoadmapPage/>} />
         <Route path="/comm" element={<CommunityEventsPage/>} />
         <Route path="/qa" element={<QAPage/>} />
+        <Route path="/example" element={<SDERoadmap/>}/>
         {/* <Route path="/eventupload" element={<EventUploadForm/>} />*/}
         <Route path="/experience" element={<UploadExperience/>} />
         <Route path="/list" element={<ExperiencesList/>} /> 
+        <Route path="/articles" element={<ArticleDisplayPage/>} /> 
+        <Route path="/articlesupload" element={<ArticleUploadPage/>} /> 
 
       </Routes>
     </Router>

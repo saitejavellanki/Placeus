@@ -147,8 +147,8 @@ const DesktopNav = () => {
   return (
     <Stack direction={'row'} spacing={4}>
       {NAV_ITEMS.map((navItem) => (
-        navItem.label === 'Interviews' ? (
-          <InterviewsDropdown key={navItem.label} isActive={location.pathname === navItem.href} />
+        navItem.children ? (
+          <DropdownMenu key={navItem.label} navItem={navItem} isActive={location.pathname === navItem.href} />
         ) : (
           <NavLink
             key={navItem.label}
@@ -161,7 +161,7 @@ const DesktopNav = () => {
   );
 };
 
-const InterviewsDropdown = ({ isActive }) => {
+const DropdownMenu = ({ navItem, isActive }) => {
   return (
     <Menu>
       <MenuButton
@@ -178,12 +178,15 @@ const InterviewsDropdown = ({ isActive }) => {
         }}
         _expanded={{ bg: 'grey.500' }}
       >
-        Interviews
+        {navItem.label}
       </MenuButton>
       <Portal>
         <MenuList>
-          <MenuItem as={RouterLink} to="/list">View Interviews</MenuItem>
-          <MenuItem as={RouterLink} to="/experience">Upload Experience</MenuItem>
+          {navItem.children.map((child) => (
+            <MenuItem key={child.label} as={RouterLink} to={child.href}>
+              {child.label}
+            </MenuItem>
+          ))}
         </MenuList>
       </Portal>
     </Menu>
@@ -226,8 +229,8 @@ const MobileNav = ({ user, handleLogout }) => {
   return (
     <Stack bg="orange.300" p={4} display={{ md: 'none' }}>
       {NAV_ITEMS.map((navItem) => (
-        navItem.label === 'Interviews' ? (
-          <MobileInterviewsDropdown key={navItem.label} />
+        navItem.children ? (
+          <MobileDropdownMenu key={navItem.label} navItem={navItem} />
         ) : (
           <MobileNavItem
             key={navItem.label}
@@ -276,16 +279,15 @@ const MobileNav = ({ user, handleLogout }) => {
   );
 };
 
-const MobileInterviewsDropdown = () => {
+const MobileDropdownMenu = ({ navItem }) => {
   return (
     <Stack spacing={4}>
-      <Text fontWeight={600} color="white">Interviews</Text>
-      <Link as={RouterLink} to="/list" pl={4} color="white">
-        View Interviews
-      </Link>
-      <Link as={RouterLink} to="/experience" pl={4} color="white">
-        Upload Experience
-      </Link>
+      <Text fontWeight={600} color="white">{navItem.label}</Text>
+      {navItem.children.map((child) => (
+        <Link key={child.label} as={RouterLink} to={child.href} pl={4} color="white">
+          {child.label}
+        </Link>
+      ))}
     </Stack>
   );
 };
@@ -336,13 +338,35 @@ const NAV_ITEMS = [
     href: '/all',
   },
   {
-    label: 'Interviews',
-    href: '/list',
+    label: 'Articles',
+    children: [
+      {
+        label: 'View Articles',
+        href: '/articles',
+      },
+      {
+        label: 'Upload Article',
+        href: '/articlesupload',
+      },
+    ],
   },
-   {
-     label: 'Roadmaps',
-     href: '/roadmaps',
-   },
+  {
+    label: 'Interviews',
+    children: [
+      {
+        label: 'View Interviews',
+        href: '/list',
+      },
+      {
+        label: 'Upload Experience',
+        href: '/experience',
+      },
+    ],
+  },
+  {
+    label: 'Roadmaps',
+    href: '/roadmaps',
+  },
   {
     label: 'Q&A',
     href: '/qa',

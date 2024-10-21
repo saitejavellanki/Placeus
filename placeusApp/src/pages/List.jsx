@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { VStack, Box, Heading, Text, Spinner, Badge, Flex, Container, Checkbox, Button, Input, HStack, useBreakpointValue } from '@chakra-ui/react';
+import { 
+  VStack, Box, Heading, Text, Spinner, Badge, Flex, Container, 
+  Checkbox, Button, Input, HStack, useBreakpointValue, Avatar
+} from '@chakra-ui/react';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase/config';
 
@@ -60,12 +63,17 @@ function ExperiencesList() {
     const statusFilter = Object.keys(filters.status).length === 0 || filters.status[exp.status];
     const searchFilter = exp.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          exp.position.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         exp.experience.toLowerCase().includes(searchTerm.toLowerCase());
+                         exp.experience.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         exp.authorName.toLowerCase().includes(searchTerm.toLowerCase());
     return companyFilter && roleFilter && statusFilter && searchFilter;
   });
 
   if (loading) {
-    return <Spinner size="xl" />;
+    return (
+      <Flex height="100vh" alignItems="center" justifyContent="center">
+        <Spinner size="xl" thickness="4px" speed="0.65s" emptyColor="gray.200" color="green.500" />
+      </Flex>
+    );
   }
 
   return (
@@ -139,9 +147,15 @@ function ExperiencesList() {
           {filteredExperiences.map((exp) => (
             <Box key={exp.id} p={6} borderWidth={1} borderRadius="lg" boxShadow="md" bg="white">
               <Flex justifyContent="space-between" alignItems="center" mb={4}>
-                <Heading size="lg" color="green.600">{exp.company}</Heading>
+                <Flex alignItems="center">
+                  <Avatar size="sm" name={exp.authorName} src={`https://avatars.dicebear.com/api/initials/${exp.authorName}.svg`} mr={2} />
+                  <VStack align="flex-start" spacing={0}>
+                    <Heading size="md" color="green.600">{exp.company}</Heading>
+                    <Text fontSize="sm" color="gray.500">{exp.authorName}</Text>
+                  </VStack>
+                </Flex>
                 <HStack>
-                  <Badge colorScheme="green" fontSize={{ base: '0.6em', md: '0.8em' }} p={2} borderRadius="full">
+                  <Badge colorScheme="blue" fontSize={{ base: '0.6em', md: '0.8em' }} p={2} borderRadius="full">
                     {exp.position}
                   </Badge>
                   <Badge colorScheme={exp.status === 'selected' ? 'green' : 'red'} fontSize={{ base: '0.6em', md: '0.8em' }} p={2} borderRadius="full">
@@ -156,6 +170,9 @@ function ExperiencesList() {
                 wordBreak="break-word" 
                 fontFamily="inherit" 
                 fontSize="inherit"
+                bg="gray.50"
+                p={4}
+                borderRadius="md"
               >
                 {exp.experience}
               </Box>

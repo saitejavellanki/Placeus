@@ -27,6 +27,7 @@ function UploadExperience() {
   const [experience, setExperience] = useState('');
   const [status, setStatus] = useState('');
   const [user, setUser] = useState(null);
+  const [authorName, setAuthorName] = useState('');
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -34,21 +35,17 @@ function UploadExperience() {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+        // Extract username from email
+        const username = currentUser.email.split('@')[0];
+        setAuthorName(username);
       } else {
         setUser(null);
-        toast({
-          title: 'Authentication required',
-          description: "You must be logged in to upload your experience.",
-          status: 'warning',
-          duration: 5000,
-          isClosable: true,
-        });
         navigate('/login');
       }
     });
 
     return () => unsubscribe();
-  }, [toast, navigate]);
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -68,6 +65,7 @@ function UploadExperience() {
         position,
         experience,
         status,
+        authorName,
         createdAt: new Date(),
         userId: user.uid
       });
@@ -93,11 +91,23 @@ function UploadExperience() {
     }
   };
 
-  return user ? (
+  if (!user) {
+    return null; // Don't render anything if user is not logged in
+  }
+
+  return (
     <Container maxW="container.md" py={8}>
       <VStack as="form" onSubmit={handleSubmit} spacing={6} align="stretch">
         <Heading as="h1" size="xl" textAlign="center">Upload Your Interview Experience</Heading>
         <Divider />
+        <FormControl isRequired>
+          <FormLabel fontWeight="bold">Author</FormLabel>
+          <Input 
+            value={authorName}
+            isReadOnly
+            size="lg"
+          />
+        </FormControl>
         <FormControl isRequired>
           <FormLabel fontWeight="bold">Company</FormLabel>
           <Input 
@@ -139,12 +149,6 @@ function UploadExperience() {
           Submit Experience
         </Button>
       </VStack>
-    </Container>
-  ) : (
-    <Container centerContent>
-      <Box padding="4" bg="red.100" color="red.500" borderRadius="md">
-        <Text fontSize="lg">You must be logged in to upload your experience.</Text>
-      </Box>
     </Container>
   );
 }
