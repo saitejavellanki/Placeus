@@ -19,6 +19,13 @@ import ExperiencesList from './pages/List';
 import SDERoadmap from './pages/Example';
 import ArticleDisplayPage from './pages/Articles';
 import ArticleUploadPage from './pages/UploadArticles';
+import UploadPage from './pages/reels/ReelsUpload';
+import DisplayPage from './pages/reels/ReelsDisplay';
+import AlumniCards from './pages/Alumni';
+import AlumniUploadForm from './pages/AlumniUpload';
+import BookingPage from './pages/Booking';
+import AdminDashboard from './pages/Admin';
+import AdminBookingDashboard from './pages/Admin';
 
 
 function App() {
@@ -43,7 +50,12 @@ function App() {
         <Route path="/list" element={<ExperiencesList/>} /> 
         <Route path="/articles" element={<ArticleDisplayPage/>} /> 
         <Route path="/articlesupload" element={<ArticleUploadPage/>} /> 
-
+        <Route path="/Reelsupload" element={<UploadPage/>} /> 
+        <Route path="/ReelsDisplay" element={<DisplayPage/>} /> 
+        <Route path="/alumni" element={<AlumniCards/>} /> 
+        <Route path="/alumniUpload" element={<AlumniUploadForm/>} /> 
+        <Route path="/booking/:alumniId" element={<BookingPage />} />
+        <Route path="/admin/bookings" element={<AdminBookingDashboard />} />
       </Routes>
     </Router>
   );

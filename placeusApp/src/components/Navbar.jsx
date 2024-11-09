@@ -364,8 +364,8 @@ const NAV_ITEMS = [
     ],
   },
   {
-    label: 'Roadmaps',
-    href: '/roadmaps',
+    label: 'Alumni',
+    href: '/alumni',
   },
   {
     label: 'Q&A',
