@@ -153,7 +153,7 @@ const BookingPage = () => {
               <VStack align="start" spacing={1}>
                 <Heading size="md">{alumni.name}</Heading>
                 <Text color="gray.600">{alumni.jobRole} at {alumni.company}</Text>
-                <Text color="blue.500">${alumni.price}/hour</Text>
+                <Text color="blue.500">Rs.{alumni.price}</Text>
               </VStack>
             </HStack>
           </CardBody>

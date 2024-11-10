@@ -34,6 +34,7 @@ const AlumniCards = () => {
   const textColor = useColorModeValue('gray.600', 'gray.200');
   const iconColor = useColorModeValue('blue.500', 'blue.300');
   const taglineColor = useColorModeValue('green.600', 'green.200');
+  const recentlyPlacedColor = useColorModeValue('green.500', 'green.300');
 
   useEffect(() => {
     const fetchAlumni = async () => {
@@ -64,12 +65,37 @@ const AlumniCards = () => {
     return Math.round(dollars * 75);
   };
 
-  const InfoRow = ({ icon: Icon, children }) => (
-    <HStack spacing={3} color={textColor}>
+  const InfoRow = ({ icon: Icon, children, color }) => (
+    <HStack spacing={3} color={color || textColor}>
       <Icon color={iconColor} />
       <Text>{children}</Text>
     </HStack>
   );
+
+  const renderExperience = (experience, recentlyPlaced) => {
+    if (experience === 0) {
+      if (recentlyPlaced) {
+        return (
+          <InfoRow 
+            icon={FaBriefcase} 
+            color={recentlyPlacedColor}
+          >
+            Recently Placed
+          </InfoRow>
+        );
+      }
+      return (
+        <InfoRow icon={FaBriefcase}>
+          Fresh Graduate
+        </InfoRow>
+      );
+    }
+    return (
+      <InfoRow icon={FaBriefcase}>
+        {experience} {experience === 1 ? 'year' : 'years'} experience
+      </InfoRow>
+    );
+  };
 
   if (loading) {
     return (
@@ -152,9 +178,7 @@ const AlumniCards = () => {
                 <InfoRow icon={FaGraduationCap}>
                   {alumnus.specialization}
                 </InfoRow>
-                <InfoRow icon={FaBriefcase}>
-                  {alumnus.experience} years experience
-                </InfoRow>
+                {renderExperience(alumnus.experience, alumnus.recentlyPlaced)}
                 <InfoRow icon={FaRupeeSign}>
                   ₹{convertToRupees(alumnus.price)}
                 </InfoRow>

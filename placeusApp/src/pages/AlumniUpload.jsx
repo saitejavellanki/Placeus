@@ -24,6 +24,8 @@ import {
   Image,
   Center,
   IconButton,
+  Switch,
+  Text,
 } from '@chakra-ui/react';
 import { CloseIcon } from '@chakra-ui/icons';
 
@@ -40,8 +42,7 @@ const specializations = [
   "Other"
 ];
 
-// Assuming you have Firebase initialized in a separate config file
-import { app } from '../firebase/config'; // Adjust the import path as needed
+import { app } from '../firebase/config';
 
 const AlumniUploadForm = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -49,7 +50,6 @@ const AlumniUploadForm = () => {
   const [profilePic, setProfilePic] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
   
-  // Initialize Firestore and Storage
   const db = getFirestore(app);
   const storage = getStorage(app);
 
@@ -60,7 +60,8 @@ const AlumniUploadForm = () => {
     specialization: '',
     experience: 0,
     price: 0,
-    profilePicUrl: ''
+    profilePicUrl: '',
+    recentlyPlaced: false
   });
 
   const handleInputChange = (e) => {
@@ -74,7 +75,16 @@ const AlumniUploadForm = () => {
   const handleNumberChange = (name, value) => {
     setFormData(prev => ({
       ...prev,
-      [name]: Number(value)
+      [name]: Number(value),
+      // Reset recentlyPlaced if experience becomes > 0
+      recentlyPlaced: Number(value) === 0 ? prev.recentlyPlaced : false
+    }));
+  };
+
+  const handleRecentlyPlacedChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      recentlyPlaced: e.target.checked
     }));
   };
 
@@ -113,7 +123,8 @@ const AlumniUploadForm = () => {
       specialization: '',
       experience: 0,
       price: 0,
-      profilePicUrl: ''
+      profilePicUrl: '',
+      recentlyPlaced: false
     });
     removeProfilePic();
   };
@@ -123,21 +134,18 @@ const AlumniUploadForm = () => {
     setIsLoading(true);
 
     try {
-      // Validate data
       if (!formData.name || !formData.jobRole || !formData.company || !formData.specialization) {
         throw new Error('Please fill in all required fields');
       }
 
       let profilePicUrl = '';
       
-      // Upload profile picture if one was selected
       if (profilePic) {
         const storageRef = ref(storage, `profile-pics/${Date.now()}-${profilePic.name}`);
         const uploadResult = await uploadBytes(storageRef, profilePic);
         profilePicUrl = await getDownloadURL(uploadResult.ref);
       }
 
-      // Add document to Firestore
       const alumniCollectionRef = collection(db, 'alumni');
       await addDoc(alumniCollectionRef, {
         ...formData,
@@ -145,7 +153,6 @@ const AlumniUploadForm = () => {
         createdAt: new Date().toISOString()
       });
 
-      // Show success message
       toast({
         title: 'Alumni Added',
         description: `Successfully added ${formData.name} to the database`,
@@ -154,10 +161,8 @@ const AlumniUploadForm = () => {
         isClosable: true,
       });
 
-      // Reset form
       resetForm();
     } catch (error) {
-      // Show error message
       toast({
         title: 'Error',
         description: error.message,
@@ -299,6 +304,26 @@ const AlumniUploadForm = () => {
                     </NumberInputStepper>
                   </NumberInput>
                 </FormControl>
+
+                {/* Recently Placed Switch - Only visible when experience is 0 */}
+                {formData.experience === 0 && (
+                  <FormControl display='flex' alignItems='center'>
+                    <FormLabel htmlFor='recently-placed' mb='0'>
+                      Recently Placed
+                    </FormLabel>
+                    <Switch
+                      id='recently-placed'
+                      isChecked={formData.recentlyPlaced}
+                      onChange={handleRecentlyPlacedChange}
+                      colorScheme="green"
+                    />
+                    {formData.recentlyPlaced && (
+                      <Text ml={2} fontSize="sm" color="green.500">
+                        ✓ Marked as recently placed
+                      </Text>
+                    )}
+                  </FormControl>
+                )}
 
                 <FormControl isRequired>
                   <FormLabel>Hourly Rate</FormLabel>
