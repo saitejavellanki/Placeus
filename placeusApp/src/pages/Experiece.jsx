@@ -28,6 +28,7 @@ function UploadExperience() {
   const [status, setStatus] = useState('');
   const [user, setUser] = useState(null);
   const [authorName, setAuthorName] = useState('');
+  const [packaging, setPackage] = useState('');
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -66,6 +67,7 @@ function UploadExperience() {
         experience,
         status,
         authorName,
+        packaging,
         createdAt: new Date(),
         userId: user.uid
       });
@@ -80,6 +82,7 @@ function UploadExperience() {
       setPosition('');
       setExperience('');
       setStatus('');
+      setPackage('');
     } catch (error) {
       toast({
         title: 'An error occurred.',
@@ -123,6 +126,15 @@ function UploadExperience() {
             value={position} 
             onChange={(e) => setPosition(e.target.value)}
             placeholder="Enter job position"
+            size="lg"
+          />
+        </FormControl>
+        <FormControl isRequired>
+          <FormLabel fontWeight="bold">Package (CTC)</FormLabel>
+          <Input 
+            value={packaging} 
+            onChange={(e) => setPackage(e.target.value)}
+            placeholder="Enter package (e.g., 20 CTC)"
             size="lg"
           />
         </FormControl>

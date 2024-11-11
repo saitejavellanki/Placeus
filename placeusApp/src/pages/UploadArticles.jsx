@@ -1,5 +1,22 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Container, FormControl, FormLabel, Heading, Input, Textarea, VStack, useToast, Image, SimpleGrid, IconButton, Select } from '@chakra-ui/react';
+import { 
+  Box, 
+  Button, 
+  Container, 
+  FormControl, 
+  FormLabel, 
+  Heading, 
+  Input, 
+  Textarea, 
+  VStack, 
+  useToast, 
+  Image, 
+  SimpleGrid, 
+  IconButton, 
+  Select,
+  Spinner,
+  Center
+} from '@chakra-ui/react';
 import { DeleteIcon } from '@chakra-ui/icons';
 import { collection, addDoc } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -13,17 +30,16 @@ const ArticleUploadPage = () => {
   const [images, setImages] = useState([]);
   const [codeSnippet, setCodeSnippet] = useState('');
   const [codeLanguage, setCodeLanguage] = useState('javascript');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const toast = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        // User is signed in
         const username = user.email.split('@')[0];
         setAuthor(username);
       } else {
-        // User is signed out, redirect to login page
         navigate('/login');
       }
     });
@@ -55,6 +71,9 @@ const ArticleUploadPage = () => {
       });
       return;
     }
+    
+    setIsSubmitting(true);
+
     try {
       const imageUrls = await Promise.all(images.map(async (image) => {
         const storageRef = ref(storage, `article-images/${Date.now()}_${image.file.name}`);
@@ -92,6 +111,8 @@ const ArticleUploadPage = () => {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -165,8 +186,20 @@ const ArticleUploadPage = () => {
                 <option value="rust">Rust</option>
               </Select>
             </FormControl>
-            <Button type="submit" colorScheme="blue">
-              Upload Article
+            <Button 
+              type="submit" 
+              colorScheme="blue"
+              isLoading={isSubmitting}
+              loadingText="Uploading Article..."
+            >
+              {isSubmitting ? (
+                <Center>
+                  <Spinner size="sm" color="white" mr={2} />
+                  Uploading...
+                </Center>
+              ) : (
+                'Upload Article'
+              )}
             </Button>
           </VStack>
         </Box>

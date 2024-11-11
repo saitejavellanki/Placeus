@@ -7,7 +7,7 @@ import {
 } from '@chakra-ui/react';
 import { collection, query, orderBy, onSnapshot } from 'firebase/firestore';
 import { db } from '../firebase/config';
-import { Filter, X, Search, Building2, User2 } from 'lucide-react';
+import { Filter, X, Search, Building2, User2, DollarSign } from 'lucide-react';
 
 function ExperiencesList() {
   const [experiences, setExperiences] = useState([]);
@@ -213,10 +213,20 @@ function ExperiencesList() {
               <Building2 size={16} />
               <Heading size="md" color="green.600">{exp.company}</Heading>
             </HStack>
-            <HStack spacing={2}>
-              <User2 size={14} />
-              <Text fontSize="sm" color="gray.500">{exp.authorName}</Text>
-            </HStack>
+            <VStack spacing={1} align="flex-start">
+              <HStack spacing={2}>
+                <User2 size={14} />
+                <Text fontSize="sm" color="gray.500">{exp.authorName}</Text>
+              </HStack>
+              {exp.package && (
+                <HStack spacing={2}>
+                  <DollarSign size={14} />
+                  <Text fontSize="sm" color="gray.500">
+                    {exp.package}
+                  </Text>
+                </HStack>
+              )}
+            </VStack>
           </Box>
           
           <HStack spacing={2} flexWrap="wrap">

@@ -26,6 +26,7 @@ import AlumniUploadForm from './pages/AlumniUpload';
 import BookingPage from './pages/Booking';
 import AdminDashboard from './pages/Admin';
 import AdminBookingDashboard from './pages/Admin';
+import AllArticlesPage from './pages/AllArticlesPage';
 
 
 function App() {
@@ -56,6 +57,7 @@ function App() {
         <Route path="/alumniUpload" element={<AlumniUploadForm/>} /> 
         <Route path="/booking/:alumniId" element={<BookingPage />} />
         <Route path="/admin/bookings" element={<AdminBookingDashboard />} />
+        <Route path="/articles/all" element={<AllArticlesPage />} />
       </Routes>
     </Router>
   );
