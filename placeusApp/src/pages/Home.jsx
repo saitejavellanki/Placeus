@@ -150,7 +150,7 @@ const Homepage = () => {
           © 2024 Placeus. All rights reserved.
         </Text>
         <Flex>
-          <Link href="https://instagram.com" isExternal mx={2}>
+          {/* <Link href="https://instagram.com" isExternal mx={2}>
             <Icon
               as={FaInstagram}
               w={5}
@@ -176,7 +176,7 @@ const Homepage = () => {
               color={iconColor}
               _hover={{ color: hoverColor }}
             />
-          </Link>
+          </Link> */}
         </Flex>
       </Flex>
     </Box>
