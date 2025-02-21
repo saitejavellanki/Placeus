@@ -38,18 +38,18 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register/>} />
       <Route path="/reset" element={<ResetPassword />} />
-      <Route path="/profile" element={<ProfilePage />} />
+      {/* <Route path="/profile" element={<ProfilePage />} /> */}
         <Route path="/all" element={<AllVideos />} />
-        <Route path="/video/:lessonId" element={<VideoPage />} />
-        <Route path="/up" element={<VideoUpload/>} /> 
-        <Route path="/roadmaps" element={<RoadmapPage/>} />
+        {/* <Route path="/video/:lessonId" element={<VideoPage />} />
+        <Route path="/up" element={<VideoUpload/>} />  */}
+        {/* <Route path="/roadmaps" element={<RoadmapPage/>} /> */}
         <Route path="/comm" element={<CommunityEventsPage/>} />
         <Route path="/qa" element={<QAPage/>} />
-        <Route path="/example" element={<SDERoadmap/>}/>
+        {/* <Route path="/example" element={<SDERoadmap/>}/> */}
         {/* <Route path="/eventupload" element={<EventUploadForm/>} />*/}
         <Route path="/experience" element={<UploadExperience/>} />
         <Route path="/list" element={<ExperiencesList/>} /> 
-        <Route path="/articles" element={<ArticleDisplayPage/>} /> 
+        {/* <Route path="/articles" element={<ArticleDisplayPage/>} /> 
         <Route path="/articlesupload" element={<ArticleUploadPage/>} /> 
         <Route path="/Reelsupload" element={<UploadPage/>} /> 
         <Route path="/ReelsDisplay" element={<DisplayPage/>} /> 
@@ -57,7 +57,7 @@ function App() {
         <Route path="/alumniUpload" element={<AlumniUploadForm/>} /> 
         <Route path="/booking/:alumniId" element={<BookingPage />} />
         <Route path="/admin/bookings" element={<AdminBookingDashboard />} />
-        <Route path="/articles/all" element={<AllArticlesPage />} />
+        <Route path="/articles/all" element={<AllArticlesPage />} /> */}
       </Routes>
     </Router>
   );

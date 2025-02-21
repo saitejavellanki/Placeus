@@ -57,7 +57,7 @@ const Homepage = () => {
   const navigate = useNavigate();
 
   const handleClick = () => {
-    navigate("/all");
+    navigate("/list");
   };
 
   useEffect(() => {
@@ -98,7 +98,7 @@ const Homepage = () => {
               <Heading as="h1" size={{ base: "xl", md: "2xl" }} mb={4}>Learn from successful professionals</Heading>
               <Text fontSize={{ base: "lg", md: "xl" }} mb={6}>Gain insights and strategies from industry experts who've achieved career success</Text>
               <Button colorScheme="purple" size="lg" onClick={handleClick}>
-                Explore Videos
+                Explore
               </Button>
             </Box>
             <Box flex={1} mt={{ base: 8, md: 0 }}>
@@ -109,7 +109,7 @@ const Homepage = () => {
       </Box>
 
       {/* Featured Videos Section */}
-      <Container maxW="container.xl" py={{ base: 8, md: 7 }}>
+      {/* <Container maxW="container.xl" py={{ base: 8, md: 7 }}>
         <Flex justify="space-between" align="center" mb={8} flexDirection={{ base: 'column', md: 'row' }}>
           <Heading as="h2" size={{ base: "lg", md: "xl" }} mb={{ base: 4, md: 0 }}>Featured Videos</Heading>
           <Button rightIcon={<ChevronRightIcon />} variant="link" colorScheme="purple" onClick={handleClick}>
@@ -131,10 +131,10 @@ const Homepage = () => {
         ) : (
           <Text textAlign="center">No videos available at the moment.</Text>
         )}
-      </Container>
+      </Container> */}
 
       <AlumniSection />
-      <TestimonialCarousel />
+      {/* <TestimonialCarousel /> */}
 
       {/* Footer */}
       <Box as="footer" bg={bgColor} py={4}>

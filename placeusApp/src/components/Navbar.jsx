@@ -333,40 +333,40 @@ const NAV_ITEMS = [
     label: 'Home',
     href: '/',
   },
+  // {
+  //   label: 'Placements',
+  //   href: '/all',
+  // },
+  // {
+  //   label: 'Articles',
+  //   children: [
+  //     {
+  //       label: 'View Articles',
+  //       href: '/articles',
+  //     },
+  //     {
+  //       label: 'Upload Article',
+  //       href: '/articlesupload',
+  //     },
+  //   ],
+  // },
   {
-    label: 'Placements',
-    href: '/all',
-  },
-  {
-    label: 'Articles',
+    label: 'Experiences',
     children: [
       {
-        label: 'View Articles',
-        href: '/articles',
-      },
-      {
-        label: 'Upload Article',
-        href: '/articlesupload',
-      },
-    ],
-  },
-  {
-    label: 'Interviews',
-    children: [
-      {
-        label: 'View Interviews',
+        label: 'View Experiences',
         href: '/list',
       },
       {
-        label: 'Upload Experience',
+        label: 'Upload Experiences',
         href: '/experience',
       },
     ],
   },
-  {
-    label: 'Alumni',
-    href: '/alumni',
-  },
+  // {
+  //   label: 'Alumni',
+  //   href: '/alumni',
+  // },
   {
     label: 'Q&A',
     href: '/qa',
